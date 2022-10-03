@@ -18,6 +18,3 @@ Team members :
 
 🔗 figma link : [a link] (https://www.figma.com/file/bFFOHbC0wpBFppOPaUUIgS/ECommerce)
 
-Wireframe
-
-Mockup.pd
