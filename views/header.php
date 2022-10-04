@@ -1,3 +1,4 @@
+<?php require 'connection.php'; ?>
 <!doctype html>
 <html lang="en-US">
 
@@ -119,13 +120,15 @@
 						</div>
 						<div class="col-sm-6">
 							<div class="right-topbar">
-								<div class="user-wishlist">
-									<a href="wishlist.html"><i class="fa fa-heart-o"></i> My Wishlist</a>
-								</div>
 								<div class="user-login">
 									<ul class="nav top-nav">
 										<li class="menu-item">
+											<?php if (isset($_SESSION['userid'])) { ?> 
+											<a href='./profile/My-profile.php'><?php echo $user['first_name'] .
+               ' ' .
+               $user['last_name'];} else { ?></a>
 											<a data-rel="loginModal" href="#"><i class="fa fa-user"></i> Login</a>
+											<?php } ?>
 										</li>
 									</ul>
 								</div>
@@ -136,8 +139,8 @@
 				</div>
 			</div>
 			<div class="navbar-container">
-				<div class="navbar navbar-default  navbar-scroll-fixed">
-					<div class="navbar-default-wrap">
+				<div class="navbar navbar-default  navbar-scroll-fixed" style="background-color: #1e1e1ea8;">
+					<div class="navbar-default-wrap" >
 						<div class="container">
 							<div class="row">
 								<div class="col-md-12 navbar-default-col">
@@ -152,6 +155,10 @@
 											<a class="navbar-search-button search-icon-mobile" href="#">
 												<i class="fa fa-search"></i>
 											</a>
+
+
+
+
 											<a class="cart-icon-mobile" href="#">
 												<!-- count of cart  -->
 												<i class="elegant_icon_bag"></i><span>0</span>
@@ -160,9 +167,9 @@
 
 											<!-- logo image  -->
 											<a class="navbar-brand" href="./">
-												<img class="logo" alt="The DMCS" src="../images/logo-transparent.png">
-												<img class="logo-fixed" alt="The DMCS" src="../images/logo-fixed.png">
-												<img class="logo-mobile" alt="The DMCS" src="../images/logo-mobile.png">
+												<img class="logo" alt="The DMCS" src="../images/ltr.png">
+												<img class="logo-fixed" alt="The DMCS" src="../images/ltrblack.png">
+												<img class="logo-mobile" alt="The DMCS" src="../images/ltrblack.png">
 											</a>
 										</div>
 										<nav class="collapse navbar-collapse primary-navbar-collapse">
@@ -174,38 +181,10 @@
 
 												</li>
 												<li class="menu-item-has-children megamenu megamenu-fullwidth dropdown">
-													<a href="shop.html" class="dropdown-hover">
+													<a href="shop.php" class="dropdown-hover">
 														<span class="underline">Shop</span> <span class="caret"></span>
 													</a>
-													<ul class="dropdown-menu">
-														<li class="menu-item-has-children mega-col-3 dropdown-submenu">
-															<h3 class="megamenu-title">
-																Women
-															</h3>
-
-														</li>
-														<li class="menu-item-has-children mega-col-3 dropdown-submenu">
-															<h3 class="megamenu-title">
-																Brands
-															</h3>
-
-														</li>
-														<li class="menu-item-has-children mega-col-3 dropdown-submenu">
-															<h3 class="megamenu-title">
-																Collections
-															</h3>
-
-														</li>
-														<li class="menu-item-has-children mega-col-3 dropdown-submenu">
-															<h3 class="megamenu-title">
-																Woo
-															</h3>
-
-
-														</li>
-													</ul>
 												</li>
-												<li><a href="collection.html"><span class="underline">Collections</span></a></li>
 
 												<li class="menu-item-has-children dropdown">
 
@@ -214,9 +193,8 @@
 														<span class="underline">Pages</span> <span class="caret"></span>
 													</a>
 													<ul class="dropdown-menu">
-														<li><a href="about-us.html">About us</a></li>
-														<li><a href="contact-us.html">Contact Us</a></li>
-														<li><a href="faq.html">FAQ</a></li>
+														<li><a href="about-us.php">About us</a></li>
+														<li><a href="contact-us.php">Contact Us</a></li>
 													</ul>
 												</li>
 												<!-- search desktop icon -->
@@ -226,12 +204,28 @@
 														<i class="fa fa-search"></i>
 													</a>
 												</li>
+
+
 												<!-- cart and boxes start -->
+	<?php
+ if (isset($_GET['del'])) {
+     $cart_id = $_GET['del'];
+
+     $query = $connect->prepare('DELETE  FROM `cart` Where cart_id=? ');
+     $query->execute([$cart_id]);
+ }
+
+ $query = 'SELECT * from `cart`';
+ $query = $connect->prepare($query);
+ $query->execute();
+ $productsInCart = $query->fetchAll(PDO::FETCH_OBJ);
+
+ if (empty($productsInCart)) { ?>
 												<li class="navbar-minicart navbar-minicart-nav">
 													<a class="minicart-link" href="#">
 														<span class="minicart-icon">
 															<i class="minicart-icon-svg elegant_icon_bag"></i>
-															<span>0</span>
+															<span><?php echo count($productsInCart); ?></span>
 														</span>
 													</a>
 
@@ -242,7 +236,7 @@
 
 														<div class="minicart-footer">
 															<div class="minicart-actions clearfix">
-																<a class="button" href="#">
+																<a class="button" href="./shop.php">
 																	<span class="text">Go to the shop</span>
 																</a>
 															</div>
@@ -251,7 +245,7 @@
 												</li>
 
 
-
+<?php } else { ?>
 
 
 
@@ -261,76 +255,53 @@
 												<li class="navbar-minicart navbar-minicart-nav">
 														<a class="minicart-link" href="#">
 															<span class="minicart-icon has-item">
-																<i class="minicart-icon-svg elegant_icon_bag"></i> <span>3</span>
+																<i class="minicart-icon-svg elegant_icon_bag"></i> <span><?php echo count(
+                    $productsInCart
+                ); ?></span>
 															</span>
 														</a>
 														<div class="minicart" style="display:none">
-															<div class="minicart-header">3 items in the shopping cart</div>
+															<div class="minicart-header"><?php echo count(
+                   $productsInCart
+               ); ?> items in the shopping cart</div>
 															<div class="minicart-body">
+																<?php foreach ($productsInCart as $pInCart) {
+
+                    $query = "SELECT * from `products` WHERE product_id= '$pInCart->product_id'";
+                    $query = $connect->prepare($query);
+                    $query->execute();
+                    $product = $query->fetch(PDO::FETCH_OBJ);
+                    ?>
 																<div class="cart-product clearfix">
 																	<div class="cart-product-image">
 																		<a class="cart-product-img" href="#">
-																			<img width="100" height="150" src="images/product/product-1.jpg" alt="Product-1"/>
+																			<img width="100" height="150" src="../imgs/<?php echo $product->image1; ?>" alt="Product-1"/>
 																		</a>
 																	</div>
 																	<div class="cart-product-details">
 																		<div class="cart-product-title">
-																			<a href="#">Cras rhoncus duis viverra</a>
+																			<a href="#"><?php echo $product->product_name; ?></a>
 																		</div>
 																		<div class="cart-product-quantity-price">
-																			2 x <span class="amount">&#36;22.00</span>
+																			<?php echo $pInCart->quantity; ?> x <span class="amount">&#36;<?php echo $product->price; ?></span>
 																		</div>
 																	</div>
-																	<a href="#" class="remove" title="Remove this item">&times;</a>
+																	<a href="?del=<?php echo $pInCart->cart_id; ?>" class="remove" title="Remove this item">&times;</a>
 																</div>
-																<div class="cart-product clearfix">
-																	<div class="cart-product-image">
-																		<a class="cart-product-img" href="#">
-																			<img width="100" height="150" src="images/product/product-3.jpg" alt="Product-3"/>
-																		</a>
-																	</div>
-																	<div class="cart-product-details">
-																		<div class="cart-product-title">
-																			<a href="#">Creamy Spring Pasta</a>
-																		</div>
-																		<div class="cart-product-quantity-price">
-																			1 x <span class="amount">&#36;12.00</span>
-																		</div>
-																	</div>
-																	<a href="#" class="remove" title="Remove this item">&times;</a>
-																</div>
+																<?php
+                } ?>
 															</div>
 															<div class="minicart-footer">
 																<div class="minicart-actions clearfix">
-																	<a class="checkout-button button" href="#">
-																		<span class="text">Checkout</span>
+																	<a class="checkout-button button" href="./cart.php">
+																		<span class="text">View Cart</span>
 																	</a>
 																</div>
 															</div>
 														</div>
 													</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<?php }
+ ?>
 												<!-- cart and boxes -->
 											</ul>
 
