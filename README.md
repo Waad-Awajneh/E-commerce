@@ -1,5 +1,5 @@
 # E-commerce
-Our Website Is my E-commerce project which demonstrates my abilities in building a completely responsive front-end and backend of an e-commerce website using popular tools such as HTML5, CSS3, Bootstrap, Javascript,PHP and mySql.
+Our Website is an E-commerce project which demonstrates my abilities in building a completely responsive front-end and backend of an e-commerce website using popular tools such as HTML5, CSS3, Bootstrap, Javascript,PHP and mySql.
 
 Team members :
 1. Laith Samamah
