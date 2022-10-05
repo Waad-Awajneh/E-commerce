@@ -123,6 +123,7 @@ if (isset($_POST['register'])) {
     if (empty($isFound)) {
         if (empty($Singup->getfName())) {
             $nameErr = 'Name is required';
+            echo "<script>location.href = 'index.php?err=signup'</script>";
             echo "<script>alert(   '$nameErr') </script>";
         } else {
             $Singup->setfName(test_input($Singup->getfName()));
@@ -132,6 +133,7 @@ if (isset($_POST['register'])) {
                 strlen($Singup->getfName()) > 4
             ) {
                 $nameErr = 'Only letters and white space allowed';
+                echo "<script>location.href = 'index.php?err=signup'</script>";
                 echo "<script>alert(   '$nameErr') </script>";
             } else {
                 $nameEr = true;
@@ -140,6 +142,7 @@ if (isset($_POST['register'])) {
 
         if (empty($Singup->getEmail())) {
             $emailErr = 'Name is required';
+            echo "<script>location.href = 'index.php?err=signup'</script>";
             echo "<script>alert(   '$emailErr') </script>";
         } else {
             $Singup->setEmail(test_input($Singup->getEmail()));
@@ -148,6 +151,7 @@ if (isset($_POST['register'])) {
 
             if (!filter_var($Singup->getEmail(), FILTER_VALIDATE_EMAIL)) {
                 $emailErr = 'Invalid email format';
+                echo "<script>location.href = 'index.php?err=signup'</script>";
                 echo "<script>alert(   '$emailErr') </script>";
             } else {
                 $emailEr = true;
@@ -156,18 +160,15 @@ if (isset($_POST['register'])) {
 
         if (empty($Singup->getPhone())) {
             $phoneErr = 'phone is required';
+            echo "<script>location.href = 'index.php?err=signup'</script>";
             echo "<script>alert(   '$phoneErr') </script>";
         } else {
             $Singup->setPhone(test_input($Singup->getPhone()));
 
             // check if name only contains letters and whitespace
-            if (
-                !preg_match(
-                    '/^\+?\d{3}[- ]?\d{3}[- ]?\d{6}$/',
-                    $Singup->getPhone()
-                )
-            ) {
+            if (!preg_match('/^\d{10}$/', $Singup->getPhone())) {
                 $phoneErr = 'Invalid phone number format';
+                echo "<script>location.href = 'index.php?err=signup'</script>";
                 echo "<script>alert(   '$phoneErr') </script>";
             } else {
                 $phoneEr = true;
@@ -176,6 +177,7 @@ if (isset($_POST['register'])) {
 
         if (empty($Singup->getPassword())) {
             $passErr = 'password is required';
+            echo "<script>location.href = 'index.php?err=signup'</script>";
             echo "<script>alert(   '$passErr') </script>";
         } else {
             $Singup->setPassword(test_input($Singup->getPassword()));
@@ -188,6 +190,7 @@ if (isset($_POST['register'])) {
                 )
             ) {
                 $passErr = 'Invalid password format';
+                echo "<script>location.href = 'index.php?err=signup'</script>";
                 echo "<script>alert(   '$passErr') </script>";
             } else {
                 $passEr = true;
@@ -197,13 +200,15 @@ if (isset($_POST['register'])) {
         // form validation for confirm password
         if ($_REQUEST['cuser_password'] != $Singup->getPassword()) {
             $cpassErr = 'Confirm Password doesnot Matche';
-            echo "<script>alert(   '$cpassErr') </script>";
+            echo "<script>location.href = 'index.php?err=signup'</script>";
+            echo "<script>alert('$cpassErr') </script>";
         } else {
             $cpassEr = true;
         }
 
         if (empty($Singup->getAddress())) {
             $addressErr = 'Address is required';
+            echo "<script>location.href = 'index.php?err=signup'</script>";
             echo "<script>alert(   '$addressErr') </script>";
         } else {
             $Singup->setAddress(test_input($Singup->getAddress()));
@@ -212,7 +217,8 @@ if (isset($_POST['register'])) {
 
         if (empty($Singup->getCity())) {
             $cityErr = 'city is required';
-            echo "<scrpt>alert(   '$cityErr ') </script>";
+            echo "<script>location.href = 'index.php?err=signup'</script>";
+            echo "<script>alert(   '$cityErr ') </script>";
         } else {
             $Singup->setCity(test_input($Singup->getCity()));
             $cityEr = true;
@@ -229,7 +235,7 @@ if (isset($_POST['register'])) {
         ) {
             $q =
                 'INSERT INTO users (first_name,last_name, address, phone, email, password,city) VALUES (?,?,?,?,?,?,?)';
-            echo "<script> alert( 'test')  </script>";
+            // echo "<script> alert( 'test')  </script>";
 
             $stmt = $connect->prepare($q);
             $stmt->execute([
@@ -241,11 +247,35 @@ if (isset($_POST['register'])) {
                 $Singup->getPassword(),
                 $Singup->getCity(),
             ]);
-            $_SESSION['userid']++;
-            header('location:index.php');
+            $emailUser = $Singup->getEmail();
+            $lastUser = $connect->query(
+                "SELECT * FROM users WHERE email='$emailUser'"
+            );
+            $lastUser = $lastUser->fetch();
+            $_SESSION['userid'] = $lastUser['user_id'];
+            if (isset($_GET['from'])) {
+                $cartInVisitor = $_SESSION['cartVisitor'];
+                foreach ($cartInVisitor as $cart) {
+                    $userId = $_SESSION['userid'];
+                    $sql = $connect->query("INSERT INTO cart (user_id, product_id , quantity)
+					VALUES ('$userId','$cart[0]','$cart[1]')");
+                }
+                unset($_SESSION['cartVisitor']);
+                $total = $_POST['totalPrice'];
+                if (isset($_POST['coupon'])) {
+                    $coupon = $_POST['coupon'];
+                    header("location: ./checkout.php?price=$total&c=$coupon");
+                } else {
+                    header("location: ./checkout.php?price=$total&c=0");
+                }
+            } else {
+                header('location:index.php');
+            }
         }
     } else {
         $emailErr = 'It looks like you’re connected try login. Please ';
+        echo "<script>location.href = 'index.php?err=signup'</script>";
         echo "<script>alert(   '$emailErr') </script>";
     }
 }
+?>

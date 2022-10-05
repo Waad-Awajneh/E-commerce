@@ -15,24 +15,43 @@ if (isset($_POST['login'])) {
 
     if (!empty($user)) {
         if ($password == $user->password) {
-            echo "<script>swal({ icon: 'success',});</script>";
             $_SESSION['userid'] = $user->user_id;
-            if ($user->is_admin) {
-                header('location: ../admin/views/index.php');
+            if (isset($_GET['from'])) {
+                $cartInVisitor = $_SESSION['cartVisitor'];
+                foreach ($cartInVisitor as $cart) {
+                    $sql = $connect->query("INSERT INTO cart (user_id, product_id , quantity)
+					VALUES ('$user->user_id','$cart[0]','$cart[1]')");
+                }
+                unset($_SESSION['cartVisitor']);
+                $total = $_POST['totalPrice'];
+                if (isset($_POST['coupon'])) {
+                    $coupon = $_POST['coupon'];
+                    header("location: ./checkout.php?price=$total&c=$coupon");
+                }
+                header("location: ./checkout.php?price=$total&c=' '");
             } else {
-                header('location: index.php');
+                echo "<script>swal({ icon: 'success',});</script>";
+                if ($user->is_admin) {
+                    header('location: ../admin/views/index.php');
+                } else {
+                    header('location: index.php');
+                }
             }
         }
         //$user->user_id;}
         else {
+            echo "<script>location.href = 'index.php?err=login'</script>";
             echo "<script>alert('incorrect password ');</script>";
         }
         // header("Location: index.php");
     } else {
+        echo "<script>location.href = 'index.php?err=login'</script>";
         echo "<script>alert('It looks like you’re used incorrect email try login. Please ');</script>";
     }
 }
 ?>
+
+<?php  ?>
 
 <div style="height: 100px ;"></div>
 

@@ -61,6 +61,10 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
             <div class="col-md-3 sidebar-wrap">
                 <div class="main-sidebar">
                     <div class="widget shop widget_price_filter">
+                    <h4 class="widget-title"><span>Price</span></h4>
+                    <div>
+
+                    </div>
                         <h4 class="widget-title"><span>Price</span></h4>
                         <!-- <form method="post" action="shop.php">
                             <div class="price_slider_wrapper">
@@ -78,7 +82,7 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
                         </form> -->
                         <div>
                             <input type="range" id="minPrice" name="min_price" data-min="0" value="0" placeholder="Min price" />
-                            <span id="spanMin">Min Price : 10</span>
+                            <span id="spanMin">Min Price : 0</span>
                             <input type="range" id="maxPrice" name="max_price" data-max="1000" value="1000" placeholder="Max price" /> 
                             <span id="spanMax">Max Price : 1000</span>       
                         </div>
@@ -90,7 +94,7 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
                         <ul class="product_list_widget">
                         <?php
                         $products = $connect->query(
-                            'SELECT * FROM products LIMIT 5'
+                            'SELECT * FROM products ORDER BY RAND() LIMIT 5'
                         );
                         while (
                             $product = $products->fetch(PDO::FETCH_ASSOC)
@@ -119,7 +123,7 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
                 </div>
             </div>
             <div class="col-md-9 main-wrap" main-wrap class="main-content  " >
-                <div data-itemselector=".product.infinite-scroll-item" data-layout="masonry" data-paginate="infinite_scroll" data-masonry-column="4" class="shop products-masonry  infinite-scroll masonry">
+                <div data-itemselector=".product.infinite-scroll-item" data-layout="masonry" data-paginate="infinite_scroll" data-masonry-column="3" class="shop products-masonry  infinite-scroll masonry">
                     <div class="masonry-filter">
                         <div class="filter-action filter-action-center">
                             <?php if (isset($_GET['category'])) {
@@ -309,7 +313,7 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
 
     rightPrice.addEventListener("input", function() {
         // let maxP=rightPrice.value*10;
-        document.getElementById("spanMax").innerHTML=`Min Price : ${rightPrice.value*10}`;
+        document.getElementById("spanMax").innerHTML=`Max Price : ${rightPrice.value*10}`;
         console.log(rightPrice.value);
         fetch('filterPrice.php', {
             method: 'POST', // or 'PUT'

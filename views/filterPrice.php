@@ -39,7 +39,7 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
                                 } ?>
                                 <li class="product masonry-item col-md-3 col-sm-6 <?php echo trim(
                                     $categorie->category_name
-                                ); ?>">
+                                ); ?>" style="min-height:400px">
                                     <div class="product-container">
                                         <figure>
                                             <div class="product-wrap">
@@ -69,7 +69,7 @@ $categories = $query->fetchAll(PDO::FETCH_OBJ);
                                                             </span>
                                                         </div>
                                                         <div class="loop-add-to-cart">
-                                                        <a href="add_to_cart.php?ad=<?php echo $product->product_id; ?>&from=index">Add To Cart</a>
+                                                        <a href="add_to_cart.php?ad=<?php echo $product->product_id; ?>&from=shop">Add To Cart</a>
                                                         </div>
                                                     </div>
                                                 </div>
